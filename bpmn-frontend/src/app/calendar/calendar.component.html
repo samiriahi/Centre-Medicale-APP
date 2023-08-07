@@ -1,0 +1,150 @@
+<app-header></app-header>
+<body>
+  <div style=" width: 75rem; margin-top: 4rem; margin-left: 10rem;">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+
+</div>
+
+
+  <p-dialog [(visible)]="visible" [style]="{ width: '30vw', height: '80vh' }">
+
+    <ng-template pTemplate="header">
+        <span class="text-xl font-bold">New Event</span>
+    </ng-template>
+    <p-tabView [(activeIndex)]="activeIndex">
+        <p-tabPanel header="Details">
+            <form [formGroup]="consultationForm" style="display: flex; align-items: center; flex-direction: column;" >
+                <!-- <div class="form-group"> -->
+                    <div>
+                        <label>Consultaion date</label><br>
+                        <input readonly formControlName="date" [style]="{ width: '20rem'}" pInputText id="date" aria-describedby="date-help" />
+                    </div>
+                    <br>
+                    <div>
+                        <label>Patient</label><br>
+                        <p-dropdown formControlName="patient" [style]="{ width: '20rem'}" [filter]="true" filterBy="patientId" [showClear]="true" [options]="patients"  placeholder="Select a patient" optionLabel="firstName"></p-dropdown>
+                    </div>
+                    <br>
+                    <div>
+                        <label>Doctor</label><br>
+                        <p-dropdown formControlName="doctor" [style]="{ width: '20rem'}" [filter]="true" filterBy="firstName" [showClear]="true" [options]="medecins"  placeholder="Select doctor" optionLabel="firstName"></p-dropdown>
+                    </div>
+                    <br>
+                    <div>
+                        <label>Room</label><br>
+                        <p-dropdown formControlName="room" [style]="{ width: '20rem'}" [filter]="true" filterBy="room_Name" [showClear]="true" [options]="rooms"  placeholder="Select room" optionLabel="room_Name"></p-dropdown>
+                    </div>
+                    <br>
+                    <div>
+                        <label>Exam</label><br>
+                        <p-dropdown formControlName="exam" [style]="{ width: '20rem'}" [filter]="true" filterBy="medExamName" [showClear]="true" [options]="exams"  placeholder="Select exam" optionLabel="medExamName"></p-dropdown>
+                    </div>
+                    <br>
+                    <div>
+                        <label>Consultaion hour</label><br>
+                        <input formControlName="hour" [style]="{ width: '20rem'}" pInputText id="hour" aria-describedby="hour-help" />
+                    </div>
+
+               </form>
+        </p-tabPanel>
+        <p-tabPanel header="Steps">
+            <form >
+                <input (change)="scanBpmn($event)" type="file" id="fileInput">
+
+            </form>
+            <p>you have to follow these steps:</p>
+            <ul *ngIf="steps.length !=0">
+                <li>Debut</li>
+                <li *ngFor="let step of steps">{{step}}</li>
+                <li>Fin</li>
+
+            </ul>
+        </p-tabPanel>
+
+    </p-tabView>
+    <ng-template pTemplate="footer">
+        <div style="display: flex; flex-direction: row; justify-content: flex-end;">
+            <p [hidden]="!doctorNotAvailableInThisHour" style="margin-right: 3rem; text-align: center; color: red; font-size: small;">The doctor that you are selected is not available at this hour! please change the selected hour</p>
+        <p-button [label]="activeIndex == 0? 'Next': 'Submit'" icon="pi pi-check" (click)="activeIndex==0? activeIndex=1: submitForm()"></p-button>
+
+        </div>
+    </ng-template>
+</p-dialog>
+
+<div class="modal" style="z-index: 5000;" id="myModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+            </div>
+            <div class="modal-body">
+                <span id="modal-text"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal fade" id="modal-yes">Yes</button>
+                <button type="button" class="btn btn-secondary " data-dismiss="modal fade" id="modal-no">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- Modal2-->
+
+<div class="modal " id="promptModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+            </div>
+            <div class="modal-body">
+                <span id="modal-text1"></span>
+                <input type="number" id="modalInput" class="form-control">
+
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal fade" id="modalOKBtn">ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<p-dialog  [(visible)]="details" [style]="{ width: '20vw', height: '70vh' }">
+    <ng-template pTemplate="header">
+        <span class="text-xl font-bold">Details</span>
+    </ng-template>
+
+    <div style="display: flex; flex-direction: row;" *ngIf="consultationDetails">
+        <div style="display: flex; flex-direction: column; padding-right: 2.5rem; border-right: solid;">
+            <div><b>Patient name: </b>{{consultationDetails?. patient}}</div><br>
+            <div><b>Doctor name: </b>{{consultationDetails?. doctor}}</div><br>
+            <div> <b>Room :</b>{{consultationDetails?. room}}</div><br>
+            <div><b>Date: </b>{{consultationDetails?. date}}</div><br>
+
+            <div><b>Hour: </b>{{consultationDetails?. hour}}</div><br>
+            <div><b>Exam name: </b>{{consultationDetails?. exam}}</div><br>
+        </div>
+
+        <ul>
+            <li>Debut</li>
+            <li *ngFor="let s of consultationDetails?.steps.split(',')">{{s}}</li>
+            <li>fin</li>
+        </ul>
+
+
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button label="OK" icon="pi pi-check" (click)="closeDetails()"></p-button>
+
+    </ng-template>
+</p-dialog>
+<app-side-nav></app-side-nav>

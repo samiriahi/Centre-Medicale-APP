@@ -1,0 +1,303 @@
+<app-header></app-header>
+<body>
+<div class="container">
+  <div class="row mb-2 mt-2 text-center ">
+     <div class="col-md-4">
+     </div>
+     <div class="col-md-4">
+       <h5>Patient Management Portal</h5>
+       <small *ngIf="titleAction$ | async as title">{{ title }}</small>
+     </div>
+     <div class="col-md-4"></div>
+    </div>
+</div>
+ <!--navbar-->
+
+      <nav class="navbar navbar-expand-md breadcrumb ">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <div class="nav nav-pills">
+            <a class="nav-item nav-link active ml-5" (click)="changeTitle('Patients')" data-toggle="tab" href="#patients">
+              <i class="fa fa-patients"></i>
+              Patients
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!--main content-->
+      <div  class="tab-content mt-3" id="myTabContent" >
+        <!--user table -->
+        <div class="tab-pane fade show active" id="patients">
+          <div class="mb-3 float-right">
+            <div class="btn-group mr-2">
+              <div class="d-flex align-items-right">
+                <form class="form-inline my-3 my-lg-0  justify-content-center">
+                  <input name="searchTerm"  #searchInput="ngModel" class="form-control mr-sm-2" ngModel
+                  (ngModelChange)="searchPatients(searchInput.value)" type="search" placeholder="search patients...">
+                </form>
+                <button type="button"  [hidden]="!isAdmin" class="btn btn-info" data-toggle="modal" data-target="#addPatientModal">
+                  <i class="fa fa-plus"></i>New Patient
+                </button>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button type="button" (click)="getPatients(true)" class="btn btn-info">
+                <i *ngIf="refreshing" class="fas fa-sync fa-spin"></i><i *ngIf="!refreshing" class="fas fa-sync"></i>
+              </button>
+            </div>
+          </div>
+          <table class="table table-hover">
+            <thead class="table-borderless">
+              <tr class="text-center">
+                <th>Photo</th>
+                <th>ID Card</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Address</th>
+                <th>Phone Number</th>
+                <th>Gender</th>
+                <th>Date of birth</th>
+              </tr>
+            </thead>
+    <tbody *ngFor="let appPatient of patients">
+      <tr class="text-center">
+        <td>
+         <img height="40" width="40" src="{{appPatient?.profileImageUrl}}" class="rounded" (click)="onSelectPatient(appPatient)" />
+        </td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.patientId}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.firstName}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.lastName}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.adresse}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.tel}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.genre}}</td>
+        <td (click)="onSelectPatient(appPatient)">{{appPatient?.birthDate}}</td>
+
+        <td (click)="onSelectPatient(appPatient)">
+          <span [hidden]="appPatient?.genre" class="badge badge-success">Man</span>
+          <span [hidden]="appPatient?.genre"  class="badge badge-danger">Woman</span>
+          <span [hidden]="appPatient?.genre"  class="badge badge-danger">Girl</span>
+          <span [hidden]="appPatient?.genre"  class="badge badge-danger">Boy</span>
+
+        </td>
+        <td class="">
+          <div class="btn-group">
+            <button class="btn btn-outline-info" (click)="onEditPatient(appPatient)"><i class="fas fa-edit"></i></button>
+            <button  class="btn btn-outline-danger" (click)="onDeletePatient(appPatient.id)"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+   </table>
+       </div>
+     </div>
+    </body>
+
+  <button  [hidden]="true"type="button" id="openPatientInfo" data-toggle="modal" data-target="#viewPatientModal">
+  </button>
+  <button [hidden]="true" type="button" id="openPatientEdit" data-toggle="modal" data-target="#editPatientModal">
+  </button>
+
+ <!-- modal patient info -->
+<div class="modal fade bd-example-modal-lg" id="viewPatientModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+  <div class="modal-content">
+  <div class="modal-header">
+  <h5 class="modal-title text-center" id="exampleModal LongTitle"> Patient :{{selectedPatient.firstName}}
+  {{selectedPatient.lastName}}
+  </h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+  <span aria-hidden="true">&times; </span>
+  </button>
+  </div>
+  <div class="modal-body">
+  <div>
+  <div class="card">
+  <div class="card-body">
+  <div class="row">
+  <div class="col-12 col-sm-auto">
+  <div class="mx-auto" style="width: 120px;">
+  <div class="d flex justify content center align-items-center rounded">
+  <img class="rounded" height="120" width="120" src="{{selectedPatient.profileImageUrl}}" alt="{{selectedPatient.firstName}}">
+  </div>
+  </div>
+  </div>
+  <div class="col d-flex flex-column flex-sm-row justify-content-between">
+    <div class="text-left mb-sm-8">
+    <h6 class="pt-2 pb-1 mb-0 text-nowrap">{{selectedPatient.firstName}}
+    {{selectedPatient.lastName}}</h6>
+    <p class="mb-1">{{selectedPatient.patientId}}</p>
+    </div>
+    </div>
+    <div class="text-center text-sm-right">
+   </div>
+  </div>
+  </div>
+  </div>
+  <ul class="list-group list-group-flush">
+  <li class="list-group-item"></li>
+  <li class="list-group-item"><i class="fa fa-birthday-cake float-right"></i> Date Of Birth : {{selectedPatient.birthDate}}
+  </li>
+  <li class="list-group-item"><i class="fa fa-map-marker float-right"></i> Address : {{selectedPatient.adresse}}
+  </li>
+  <li class="list-group-item"><i class="fa fa-phone float-right"></i>Telephone Number:{{selectedPatient.tel}}
+  </li>
+  <li class="list-group-item"><i class="fa fa-id-card float-right"></i>ID Card : {{selectedPatient.patientId}}
+  </li>
+  <li class="list-group-item"><i class="fa fa-venus-mars float-right"></i>Gender :{{selectedPatient.genre}}
+  </li>
+
+  </ul>
+  </div>
+  </div>
+  </div>
+  <div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+  </div>
+
+
+
+
+ <!-- model add user -->
+ <div class="modal draggable fade bd-example-modal-lg" id="addPatientModal" tabindex="-1" role="dialog"
+ aria-labelled by="exampleModalCenterTitle" aria-hidden="true">
+ <div class="modal-dialog" role="document">
+ <div class="modal-content">
+  <div class="modal-header">
+   <h5 class="modal-title text-center">New Patient</h5>
+   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+   <span aria-hidden="true">&times; </span>
+   </button>
+  </div>
+ <div class="modal-body">
+ <div>
+ <form #newPatientForm="ngForm" (ngSubmit)="onAddNewPatient(newPatientForm)">
+  <div class="form-group">
+    <label for="firstName">FirtName</label>
+    <input type="text" name="firstName" required ngModel class="form-control">
+   </div>
+  <div class="form-group">
+   <label for="lastName">LastName</label>
+   <input type="text" name="lastName" required ngModel class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="patientId"> ID Card</label>
+    <input type="text" name="patientId" required ngModel  class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="adresse">Address</label>
+    <input type="text" name="adresse" required ngModel class="form-control">
+   </div>
+  <div  class="form-group">
+    <label for="genre">Gender</label>
+    <select  name="genre" required ngModel="genre" class="form-control">
+      <option value ="Men">Men </option>
+      <option value ="Woman">Woman</option>
+      <option value ="Girl">Girl</option>
+      <option value ="Boy">Boy</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="tel">Telephon Number</label>
+    <input type="text" name="tel" required ngModel class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="birthDate">Birth Date </label>
+    <input type="text" name="birthDate"  required ngModel  class="form-control">
+  </div>
+
+
+
+   <div class="input-group mb-2" >
+    <div class="input-group-prepend">
+      <span class="input-group-text" >Profile Picture</span>
+    </div>
+    <div class="custom-file">
+      <input type="file" name="profileImage"
+      (change)="onProfileImageChange($any($event).target.files[0].name , ($any($event).target.files[0]))"
+      class="custom-file-input">
+      <label class="custom-file-label" ><span [hidden]="!fileName" > {{fileName}} </span>
+         <span [hidden]="fileName" >Choose File</span>
+      </label>
+   </div>
+ </div>
+
+
+   <button type="submit" style="display: none;" id="new-patient-save"></button>
+ </form>
+ </div>
+ </div>
+ <div class="modal-footer">
+ <button type="button" class="btn btn-secondary" data-dismiss="modal" id="new-patient-close">Close</button>
+ <button type="button" (click)="saveNewPatient()" [disabled]="newPatientForm.invalid" class="btn btn-primary" >Add Patient</button>
+ </div>
+ </div>
+ </div>
+</div>
+
+
+<!-- model edit user -->
+<div class="modal draggable fade bd-example-modal-lg" id="editPatientModal" tabindex="-1" role="dialog"
+aria-labelled by="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+ <div class="modal-header">
+  <h5 class="modal-title text-center">Edit {{editPatient.firstName}}
+   {{editPatient.lastName}}</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+  <span aria-hidden="true">&times; </span>
+  </button>
+ </div>
+<div class="modal-body">
+<div class="">
+<form #editPatientForm="ngForm" >
+ <div class="form-group">
+  <label for="firstName">First Name</label>
+  <input type="text" name="firstName"
+   required [(ngModel)]="editPatient.firstName" class="form-control">
+ </div>
+ <div class="form-group">
+  <label for="lastName">Last Name</label>
+  <input type="text" name="lastName"  required
+   [(ngModel)]="editPatient.lastName" class="form-control">
+ </div>
+ <div class="form-group">
+  <label for="patientId">ID Card</label>
+  <input type="text" name="patientId"   required [(ngModel)] ="editPatient.patientId" class="form-control">
+ </div>
+ <div class="form-group">
+  <label for="adresse">Address</label>
+  <input type="text" name="adresse"  required [(ngModel)]="editPatient.adresse" class="form-control">
+ </div>
+ <div class="form-group">
+  <label for="tel">Telephone Number</label>
+  <input type="text" name="tel"  required [(ngModel)]="editPatient.tel" class="form-control">
+ </div>
+  <div class="input-group mb-2" >
+    <div class="input-group-prepend">
+      <span class="input-group-text" >Profile Picture</span>
+    </div>
+    <div class="custom-file">
+      <input type="file" name="profileImage"
+      (change)="onProfileImageChange($any($event).target.files[0].name , ($any($event).target.files[0]))"
+      class="custom-file-input">
+      <label class="custom-file-label" ><span [hidden]="!fileName" > {{fileName}} </span>
+         <span [hidden]="fileName" >Choose File</span>
+      </label>
+   </div>
+ </div>
+
+</form>
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-dismiss="modal" id="edit-patient-close">Close</button>
+<button type="button" (click)="onUpdatePatient()" [disabled]="editPatientForm.invalid  " class="btn btn-primary" >Save Changes</button>
+</div>
+</div>
+</div>
+</div>
+
+
+<app-side-nav></app-side-nav>

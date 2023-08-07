@@ -1,0 +1,88 @@
+/* Google fonts(Poppins) */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400%3b500%3b600%3b700&display=swap");
+
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+body{
+    background:#d1cdcd;
+    padding-left: 280px;
+    padding-right: 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+nav{
+   position: absolute;
+   top: 50px;
+   bottom: 0;
+   height: 100%;
+   left: 0;
+   background:#113c60 ;
+   width: 90px;
+   overflow: hidden;
+   transition: width 0.2s linear;
+   box-shadow: 0 20px 35px #939393 ;
+   border-top-right-radius: 10px;
+   border-bottom-right-radius: 10px;
+}
+
+.logo{
+    text-align: center;
+    display: flex;
+    transition: all 0.5 sease;
+    margin: 10px 0 0 10px;
+}
+.logo img{
+    width: 60px;
+    height: 60px;
+    border-radius: 40%;
+}
+
+.logo span{
+    font-weight: bold;
+    padding-left: 5px;
+    font-size : 12px ;
+    text-transform: uppercase;
+}
+
+a{
+    position: relative;
+    color: rgb(241, 242, 245);
+    font-size: 14px;
+    display: table ;
+    width: 300px ;
+    padding: 10px;
+}
+
+.fas{
+    position: relative;
+    width: 70px;
+    height: 40px;
+    top: 14px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.nav-item{
+    position: relative;
+    top: 12px;
+    padding-left: 5px;
+}
+a:hover{
+    background:rgb(1, 38, 69) ;
+}
+nav:hover{
+    width: 240px;
+    transition: all 0.5s ease;
+}
+.logout{
+    position: absolute;
+    bottom:0;
+}
